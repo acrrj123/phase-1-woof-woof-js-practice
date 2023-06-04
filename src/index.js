@@ -15,9 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
     span.addEventListener('click', () => renderPupInDom(pup))
   }
 
+  let div = document.getElementById('dog-info')
+
   function renderPupInDom(pup) {
-    let div = document.getElementById('dog-info')
-    div.innerHTML = ""
+    div.innerHTML = ''
     let h2 = document.createElement('h2')
     h2.textContent = pup.name
     //console.log(pup)
@@ -49,26 +50,23 @@ document.addEventListener("DOMContentLoaded", () => {
   .then(pupsArray => filterDogs(pupsArray))
   
   function filterDogs(pupsArray) {
-    let goodDogs = pupsArray.filter(pup => pup.isGoodDog == true)
+    let goodPupsArray = pupsArray.filter(pup => pup.isGoodDog == true)
     //console.log(pupsArray)
-    //console.log(goodDogs)
+    //console.log(goodPupsArray)
     let filterBtn = document.getElementById('good-dog-filter')
     filterBtn.addEventListener('click', () => { 
       if (filterBtn.textContent == 'Filter good dogs: OFF') { 
         filterBtn.textContent = 'Filter good dogs: ON'
-        renderDogs(goodDogs)
+        dogBar.innerHTML = ''
+        div.innerHTML = ''
+        goodPupsArray.forEach(goodPup => renderPupsInBar(goodPup))
       } 
       else {
         filterBtn.textContent ='Filter good dogs: OFF'
-        renderDogs(pupsArray)
+        dogBar.innerHTML = ''
+        div.innerHTML = ''
+        pupsArray.forEach(pup => renderPupsInBar(pup))
       } 
-    })
-  }
-  
-  function renderDogs(pupsArray) {
-    dogBar.innerHTML = ''
-    pupsArray.forEach(pup => {
-      renderPupsInBar(pup)  
     })
   }
 })
