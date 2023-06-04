@@ -2,21 +2,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fetch('http://localhost:3000/pups')
   .then(r => r.json())
-  //.then(pups => console.log(pups))
-  .then(pups => pups.forEach(pup => renderPups(pup)))
+  //.then(pupsArray => console.log(pupsArray))
+  .then(pupsArray => pupsArray.forEach(pup => renderPupsInBar(pup)))
   
+  let dogBar = document.getElementById('dog-bar')
   
-  function renderPups(pup) {
+  function renderPupsInBar(pup) {
     let span = document.createElement('span')
     span.textContent = `${pup.name}`
     //console.log(pup.name)
-    let dogBar = document.getElementById('dog-bar')
     dogBar.appendChild(span)
-
-    span.addEventListener('click', () => fetchOnePup(pup))
+    span.addEventListener('click', () => renderPupInDom(pup))
   }
 
-  function fetchOnePup(pup) {
+  function renderPupInDom(pup) {
     let div = document.getElementById('dog-info')
     div.innerHTML = ""
     let h2 = document.createElement('h2')
@@ -27,10 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let btn = document.createElement('button')
     btn.textContent = pup.isGoodDog? 'Good dog' : 'Bad dog'
     div.append(img, h2, btn)
-
-    btn.addEventListener ('click', () => {
-      changeStatus(pup.id, pup.isGoodDog)
-    })
+    btn.addEventListener ('click', () => changeStatus(pup.id, pup.isGoodDog))
   }
 
   function changeStatus(id, isGoodDog) {
@@ -43,21 +39,36 @@ document.addEventListener("DOMContentLoaded", () => {
     body: JSON.stringify({isGoodDog: !isGoodDog})
     })
     .then(resp => resp.json())
-    .then(dogInfo => {
-      fetchOnePup(dogInfo)
-    })
+    .then(pup => renderPupInDom(pup))
   }
 
-  let filterBtn = document.getElementById('good-dog-filter')
-  filterBtn.addEventListener('click', e => toggleOnOff())
+  // Filter dogs and toggle btn on/off
+
+  fetch('http://localhost:3000/pups')
+  .then(resp => resp.json())
+  .then(pupsArray => filterDogs(pupsArray))
   
-  function toggleOnOff(e) {
-    if (filterBtn.textContent == 'Filter good dogs: OFF') { 
-      filterBtn.textContent = 'Filter good dogs: ON'
-      //renderGoodDogs()
-    } 
-    else {
-      filterBtn.textContent ='Filter good dogs: OFF'
-    }  
+  function filterDogs(pupsArray) {
+    let goodDogs = pupsArray.filter(pup => pup.isGoodDog == true)
+    //console.log(pupsArray)
+    //console.log(goodDogs)
+    let filterBtn = document.getElementById('good-dog-filter')
+    filterBtn.addEventListener('click', () => { 
+      if (filterBtn.textContent == 'Filter good dogs: OFF') { 
+        filterBtn.textContent = 'Filter good dogs: ON'
+        renderDogs(goodDogs)
+      } 
+      else {
+        filterBtn.textContent ='Filter good dogs: OFF'
+        renderDogs(pupsArray)
+      } 
+    })
+  }
+  
+  function renderDogs(pupsArray) {
+    dogBar.innerHTML = ''
+    pupsArray.forEach(pup => {
+      renderPupsInBar(pup)  
+    })
   }
 })
